@@ -12,7 +12,7 @@
 </td><td class="code"><div class="highlight"><pre>            <span class="nx">jumpkey</span><span class="o">:</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span></pre></div></td></tr><tr id="section-7"><td class="docs"><div class="pilwrap"><a href="#section-7" class="pilcrow">&#182;</a></div><p>This set of attributes determines what are shown as columns.</p>
 </td><td class="code"><div class="highlight"><pre>            <span class="nx">displayAttributes</span><span class="o">:</span> <span class="p">[</span>
                 <span class="p">{</span>
-                    <span class="nx">label</span><span class="o">:</span> <span class="s2">&quot;todo&quot;</span><span class="p">,</span>
+                    <span class="nx">label</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
                     <span class="nx">field</span><span class="o">:</span> <span class="s2">&quot;name&quot;</span>
                 <span class="p">},</span>
                 <span class="p">{</span> 
@@ -75,7 +75,6 @@ bindings pane and can be activated by hotkey.</p>
                 <span class="p">},</span>
                 <span class="p">{</span>
                     <span class="nx">label</span><span class="o">:</span> <span class="s2">&quot;Clear selected&quot;</span><span class="p">,</span>
-                    <span class="nx">batchLabel</span><span class="o">:</span> <span class="s2">&quot;Clear&quot;</span><span class="p">,</span>
                     <span class="nx">hotkey</span><span class="o">:</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
                     <span class="nx">activate</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">selected</span><span class="p">)</span> <span class="p">{</span>
                         <span class="nx">c</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">;</span>
@@ -97,7 +96,11 @@ strike-thru look happening for completed items.</p>
 
         <span class="p">});</span></pre></div></td></tr><tr id="section-25"><td class="docs"><div class="pilwrap"><a href="#section-25" class="pilcrow">&#182;</a></div><p>Render the Ribs list.</p>
 </td><td class="code"><div class="highlight"><pre>        <span class="nx">todos_view</span><span class="p">.</span><span class="nx">render</span><span class="p">();</span></pre></div></td></tr><tr id="section-26"><td class="docs"><div class="pilwrap"><a href="#section-26" class="pilcrow">&#182;</a></div><p>Add the Ribs list to the DOM.</p>
-</td><td class="code"><div class="highlight"><pre>        <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">todos_view</span><span class="p">.</span><span class="nx">el</span><span class="p">);</span>
+</td><td class="code"><div class="highlight"><pre>        <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">).</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">todos_view</span><span class="p">.</span><span class="nx">el</span><span class="p">);</span>
+        <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;a[href=#showKeyboardBindings]&quot;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="nx">Ribs</span><span class="p">.</span><span class="nx">showKeyboardBindings</span><span class="p">();</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="p">});</span>
         
     <span class="p">});</span>
 
