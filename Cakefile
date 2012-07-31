@@ -6,7 +6,7 @@ execSync = require 'execSync'
 
 option '-u', '--uglify', 'uglify js output'
 
-task 'deps', 'concatenate dependencies and uglify (optionally)', (options) ->
+task 'dependencies', 'concatenate dependencies and uglify (optionally)', (options) ->
     
     alljs = ""
 
@@ -21,13 +21,13 @@ task 'deps', 'concatenate dependencies and uglify (optionally)', (options) ->
         alljs += js+"\n"
 
     if options.uglify
-        outfile = "deps.min.js"
+        outfile = "dependencies.min.js"
         ast = parser.parse alljs
         ast = uglify.ast_mangle ast
         ast = uglify.ast_squeeze ast
         alljs = uglify.gen_code ast
     else
-        outfile = "deps.js"
+        outfile = "dependencies.js"
 
     fs.writeFileSync outfile, alljs
 

@@ -1,0 +1,25 @@
+{
+    "author": "Joey Hobbs", 
+    "description": "Ribs sits upon Backbone to provide an actionable list widget.",
+    "docco_husky": {
+        "output_dir": ".", 
+        "project_name": "Ribs", 
+        "show_timestamp": false
+    }, 
+    "dependencies":{
+    },
+    "keywords": [
+        "backbone", 
+        "collection", 
+        "coffeescript", 
+        "widget", 
+        "hotkeys", 
+        "shortcuts"
+    ], 
+    "licenses": {
+        "type": "MIT", 
+        "url": "http://opensource.org/licenses/mit-license.php"
+    }, 
+    "name": "ribs", 
+    "version": "0.0.1"
+}

@@ -1,76 +1,69 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Ribs demo</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script type="text/javascript" src="deps.min.js"></script>
-        <script type="text/javascript" src="ribs.min.js"></script>
-        <link rel="stylesheet" href="ribs.css" />
-    </head>
-    <script>
-        $(function() {
-            var things = new Backbone.Collection([
-                {
-                    name: "Github page", 
-                    url: "http://github.com/quid/ribs"
-                },
-                {
-                    name: "Annotated Source", 
-                    url: "docs/ribs.html"
-                },
-                {
-                    name: "Download (CoffeeScript)", 
-                    url: "ribs.coffee"
-                },
-                {
-                    name: "Download (JavaScript)", 
-                    url: "ribs.js"
-                },
-                {
-                    name: "Download (Uglified JavaScript)", 
-                    url: "ribs.min.js"
-                },
-                {
-                    name: "Demo \"todos\" application", 
-                    url: "demo"
-                },
-                {
-                    name: "Annotated Source for demo \"todos\" application", 
-                    url: "docs/todos.html"
-                }
-            ]);
+<!DOCTYPE html><html><head><title>README</title><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"><link rel="stylesheet" media="all" href="./docco.css"></head><body><div id="container"><div id="background"></div><div id="jump_to">Jump To &hellip;<div id="jump_wrapper"><div id="jump_page"><a href="./index.html" class="source"><span class="file_name">README</span></a><a href="./demo/todos.js.html" class="source "><span class="base_path">demo / </span><span class="file_name">todos.js</span></a><a href="./ribs.coffee.html" class="source "><span class="base_path">. / </span><span class="file_name">ribs.coffee</span></a></div></div></div><table cellpadding="0" cellspacing="0"><thead><tr><th class="docs"></th><th class="code"></th></tr></thead><tbody><tr id="section"><td class="docs"><h1>ribs
+</h1><p>Ribs sits upon Backbone to provide an actionable list widget.</p><h3>Version</h3><p>0.0.1</p><h3>Author</h3><p>Joey Hobbs</p><h3>Dependencies </h3><ul></ul><p><h3>Stats</h3><pre class="code_stats">
+http://cloc.sourceforge.net v 1.55  T=0.5 s (4.0 files/s, 1830.0 lines/s)
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+CoffeeScript                     1            179             58            545
+Javascript                       1              9             29             95
+-------------------------------------------------------------------------------
+SUM:                             2            188             87            640
+-------------------------------------------------------------------------------
+</pre></p></td><td id="content" class="code"><h1>Ribs</h1>
 
-            var list = new Ribs.List({
-                title: "ribs.coffee",
-                itemName: "link",
-                jumpKey: "r",
-                collection: things,
-                displayAttributes: [{
-                    label: "links",
-                    field: "name"
-                }],
-                actions: [{
-                    label: "Go",
-                    inline: true,
-                    batch: false,
-                    activate: function(selected, itemView) {
-                        if (itemView !== undefined) {
-                            window.open(itemView.model.get("url"));
-                        }
-                    }
-                }]
-            });
-            list.render();
-            $("body").append(list.el);
-        });
-    </script>
-    <style type="text/css">
-        body { text-align: center; padding: 50px; }
-        .ribs { text-align: left; width: 500px; display: inline-block; }
-        .ribs .name { width: 427px; }
-        .ribs .title { text-transform: none; }
-        .ribs .title { font-variant: normal; }
-    </style>
-    <body>
-    </body>
-</html>
+<p><a href="http://github.com/quid/ribs">Link to GitHub Repository</a></p>
+
+<p>Ribs can be used to make beautiful things, like functional list widgets and, 
+according to a large number of people, 
+<a href="http://en.wikipedia.org/wiki/Eve#Creation">women</a>.</p>
+
+<p>The meat and bones of Ribs is the <code>Ribs.List</code> - an extended Backbone view which 
+renders a given collection and set of actions. </p>
+
+<h2>Documentation</h2>
+
+<p>Unfortunately we haven't written a tonne of official documentation yet.
+However you can feel free to look at the <a href="ribs.coffee.html">annotated source</a>.</p>
+
+<p>Another good way to learn how to use Ribs is to look at the 
+<a href="demo/todos.js.html">annotated source of our demo application</a> 
+(yet another Todo manager).</p>
+
+<p>You can see the <a href="http://quid.github.com/ribs/demo">application in action here</a>.</p>
+
+<h2>Depenencies</h2>
+
+<ul>
+<li><a href="http://jquery.com">jquery.js</a></li>
+<li><a href="http://underscorejs.org">underscore.js</a></li>
+<li><a href="http://backbonejs.org">backbone.js</a></li>
+<li><a href="http://joestelmach.github.com/laconic">laconic.js</a></li>
+</ul>
+
+<h2>Downloads</h2>
+
+<ul>
+<li><a href="http://quid.github.com/ribs/ribs.coffee">Ribs in CoffeeScript</a></li>
+<li><a href="http://quid.github.com/ribs/ribs.js">Ribs compiled to JavaScript</a></li>
+<li><a href="http://quid.github.com/ribs/ribs.min.js">Ribs compiled to JavaScript and uglified</a></li>
+</ul>
+
+<h2>Keyboard Utilities</h2>
+
+<p>Support for keyboard shortcuts is one of the more useful features of Ribs.</p>
+
+<p>Ribs lists can have jumpkeys. Jumpkeys are prefixed by 'g' and will put keyboard
+focus on the first item in the Ribs list. Additional jumpkeys can be registered
+at will with the <code>Ribs.registerJumpKey(...)</code> function.</p>
+
+<p>Actions can have hotkeys. Pressing a hotkey will trigger the action on all 
+selected items in the focussed Ribs list.</p>
+
+<p>Both Jumpkeys and Hotkeys can be discovered by the user by hitting the global 
+hotkey <code>?</code>. Calling <code>Ribs.showKeyboardBindings()</code> will do the same.</p>
+
+<h2>Work in Progress</h2>
+
+<p>Ribs is a work in progress. It seems to work well in the lastest Chrome, Firefox
+and Safari. Please let us know if something is wrong by <a href="https://github.com/quid/ribs/issues">filing an issue on
+GitHub</a>.</p>  </td></tr></tbody></table><div id="projectname"><a href="./index.html">Ribs</a></div></div></body></html>
