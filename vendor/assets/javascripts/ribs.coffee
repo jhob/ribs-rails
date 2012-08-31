@@ -194,17 +194,16 @@ do ($=jQuery) ->
             @$el.empty()
             @$el.data("cid", @model.cid)
 
-            toggle = $.el.input
-                type: "checkbox"
-                tabindex: -1
-
-            if @$el.is ".selected"
-                $(toggle).attr "checked", true
-
-            @$el.append $.el.div(
-                { class: "toggle" },
-                toggle
-            )
+            unless @view.suppressToggle
+                toggle = $.el.input
+                    type: "checkbox"
+                    tabindex: -1
+                if @$el.is ".selected"
+                    $(toggle).attr "checked", true
+                @$el.append $.el.div(
+                    { class: "toggle" },
+                    toggle
+                )
 
             obj = @model.toJSON()
 
@@ -274,8 +273,6 @@ do ($=jQuery) ->
   
         tagName: "div"
     
-        className: "ribs"
-    
         itemName: "item"
     
         _ribsEvents: 
@@ -292,12 +289,17 @@ do ($=jQuery) ->
 
         stopPropogation: (e) ->
             e.preventDefault()
+
+        renderOrder: ["Title", "Actions", "Header", "List", "Footer"]
     
         constructor : (options) ->
     
             @sortArrows = {}
             @sortArrows[-1] = "↓"
             @sortArrows[1] = "↑"
+
+            @className ||= ""
+            @className += " ribs"
     
             @events ||= {}
 
@@ -310,13 +312,8 @@ do ($=jQuery) ->
             super options
 
             # Construct internal components.
-            @initializeTitle()
-            @initializeActions()
-            @initializeHeader()
-            @initializeList()
-            @initializeFooter()
-
-            @addAllItems()
+            _.each @renderOrder, (t) =>
+                @["initialize#{t}"]() unless @["suppress#{t}"]
 
             # Bind jump key.
             if @jumpkey?
@@ -324,11 +321,21 @@ do ($=jQuery) ->
                     @$el.find(@jumpSelector).focus()
                 , this
 
+            if @collection?
+                @setCollection @collection
+
+        setCollection: (collection)->
+            @collection = collection
+            _.each _.union(@inlineActions, @batchActions), (action) =>
+                action.setCollection @collection if action?
             # Bind events to collection.
             @collection.on "add", @addItem, this
             @collection.on "reset", @addAllItems, this
-            @collection.on "selected deselected reset add remove", @updateHeader, this
-            @collection.on "selected deselected reset add remove", @updateFooter, this
+            @collection.on "selected deselected reset add remove", @updateHeader, this if @$header
+            @collection.on "selected deselected reset add remove", @updateFooter, this if @$footer
+
+            # Add items from collection to view.
+            @addAllItems()
 
 
         getSelected : ->
@@ -350,11 +357,11 @@ do ($=jQuery) ->
             if @selectedByDefault is true 
                 @$list.find(".item.selected").trigger "deselect", silent: true
                 @selectedByDefault = false
-                @collection.trigger "deselected"
+                @collection?.trigger "deselected"
             else
                 @$list.find(".item:not(.selected)").trigger "select", silent: true
                 @selectedByDefault = true
-                @collection.trigger "selected"
+                @collection?.trigger "selected"
 
         invertSelected : ->
             toSelect = @$list.find(":not(.item.selected)")
@@ -372,6 +379,8 @@ do ($=jQuery) ->
             @$el.toggleClass "minimized", 100
 
         sortBy : (field, old_field) ->
+
+            return unless @collection?
 
             re = new RegExp(" (#{_.values(@sortArrows).join("|")})$|$")
             dir = @collection.sortingDirection[field] ? 1
@@ -418,9 +427,9 @@ do ($=jQuery) ->
         keypressed : (event) ->
             unless Ribs._readyToJump or $(":focus").is("input:text, textarea")
                 if event.which is 106 # j
-                    $(":focus").nextAll(".item:not(.disabled):first").focus()
+                    $(":focus").nextAll(".item:visible:not(.disabled):first").focus()
                 else if event.which is 107 # k
-                    $(":focus").prevAll(".item:not(.disabled):first").focus()
+                    $(":focus").prevAll(".item:visible:not(.disabled):first").focus()
                 else if event.which is 74 # J
                     @$list.find(".item:last").focus()
                 else if event.which is 75 # K
@@ -443,7 +452,7 @@ do ($=jQuery) ->
             unless @focussed
                 @focussed = true
             @$el.addClass "focussed"
-            @collection.trigger "focusin"
+            @collection?.trigger "focusin"
     
         focusout : (event) ->
             if @focussed
@@ -452,7 +461,7 @@ do ($=jQuery) ->
                     if @$el.find(document.activeElement).length is 0
                         @$el.removeClass "focussed"
                     @focussed = false
-                    @collection.trigger "focusout"
+                    @collection?.trigger "focusout"
                 , 10
         
         plural : ->
@@ -461,18 +470,16 @@ do ($=jQuery) ->
         # initializing
         
         initializeTitle: -> 
-            unless @suppressTitle?
-                title = @title ? @plural()
-                @$title = $( $.el.h1 {class: "title"}, title )
-                @$el.append @$title
+            title = @title ? @plural()
+            @$title = $( $.el.h1 {class: "title"}, title )
+            @$el.append @$title
         
         initializeActions: ->
             
-            @$batchActions = $($.el.ul class: "actions")
-            @$el.append @$batchActions
-            
             @batchActions = []
             @inlineActions = []
+
+            @$batchActions = $($.el.ul class: "actions")
             
             # populate @batchActions and @inlineActions with instance of
             # `Ribs.Action` based on @actions
@@ -486,7 +493,12 @@ do ($=jQuery) ->
                     @batchActions.push action
                     action.render()
                     @$batchActions.append action.el
-            @$batchActions
+
+            if @batchActions.length
+                @$el.append @$batchActions
+                @$batchActions
+            else
+                null
         
         initializeList: ->
             @$list = $($.el.ul( class: "list"))
@@ -508,10 +520,10 @@ do ($=jQuery) ->
 
             @$el.append @$header
 
-            toggle = $.el.input(type: "checkbox", tabindex: -1 )
-            $(toggle).attr("checked", "checked") if @selectedByDefault
-
-            @$header.append $.el.div({class:"toggle"}, toggle)
+            unless @suppressToggle
+                toggle = $.el.input(type: "checkbox", tabindex: -1 )
+                $(toggle).attr("checked", "checked") if @selectedByDefault
+                @$header.append $.el.div({class:"toggle"}, toggle)
 
             if @displayAttributes?
                 attributes = @displayAttributes
@@ -587,12 +599,15 @@ do ($=jQuery) ->
             
             super options
 
-            if @collection?
-                @collection.on "selected deselected reset", @checkRequirements, this
-                @view.on "keypressed", @keypressedOnView, this if @hotkey?
+            @setCollection @collection if @collection?
 
             @checkRequirements()
     
+        setCollection: (collection) ->
+            if collection?
+                @collection = collection
+                @collection.on "selected deselected reset", @checkRequirements, this
+                @view.on "keypressed", @keypressedOnView, this if @hotkey?
   
         checkRequirements: ->
             enable = @allowed()
