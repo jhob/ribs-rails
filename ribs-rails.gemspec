@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   
   s.summary = "Use ribs.coffee with rails 3.2"
   s.description = "Quickly setup ribs.coffee for use with rails 3.2."
-  s.files = Dir["vendor/**/*"] + ["LICENSE", "README.md"]
+  s.files = Dir["vendor/**/*"] + ["LICENSE", "README.md"] + Dir["lib/**/*"]
   
   s.add_dependency('coffee-script', '~> 2.2.0')
   
