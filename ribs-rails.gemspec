@@ -1,5 +1,9 @@
 # Provide a simple gemspec so you can easily use your
 # project in your rails apps through git.
+
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
 Gem::Specification.new do |s|
   s.name = "ribs-rails"
   s.version = "0.1.0"

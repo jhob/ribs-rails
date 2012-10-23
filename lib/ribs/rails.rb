@@ -1,4 +1,4 @@
-require 'jquery/rails/engine' if ::Rails.version >= '3.1'
+require 'ribs/rails/engine' 
 
 module Ribs
   module Rails
