@@ -6,7 +6,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name = "ribs-rails"
-  s.version = "0.1.0"
+  s.version = "0.1.1"
   s.authors     = ["Joey Hobbs", "Sam Dalton"]
   s.email       = ["joey@quid.com"]
   s.homepage    = "http://github.com/quid/ribs-rails"
