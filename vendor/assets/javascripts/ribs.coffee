@@ -184,13 +184,16 @@ do ($=jQuery) ->
 
             @view = options?.view
 
+            if @listItemCellView is undefined
+                @listItemCellView = Ribs.ListItemCell
+
             # create cell views
             @listItemCells = []
             _.each @view.displayAttributes, (attribute) =>
                 attribute = _.clone(attribute)
                 attribute.view = @
                 attribute.model = options.model
-                @listItemCells.push new Ribs.ListItemCell attribute
+                @listItemCells.push new @listItemCellView attribute
 
             super options
 
@@ -288,7 +291,6 @@ do ($=jQuery) ->
             'blur .editableField' : 'saveEditedField'
   
         constructor : (options) ->
-
             @events ||= {}
             _.extend @events, @_ribsEvents
             _.extend this, options # TODO remove this
@@ -337,6 +339,15 @@ do ($=jQuery) ->
                 # default to a text field
                 if @options.editable instanceof Function
                     editField = @options.editable.call this, @renderableValue(true), @model
+                else if @options.editable instanceof Array
+                    # Treat each element as an option in a select element
+                    el = $.el.select()
+                    _.each @options.editable, (option) =>
+                        optionEl = $.el.option(value: option, option)
+                        if option is @renderableValue(true)
+                            $(optionEl).attr('selected', true)
+                        optionEl.appendTo(el)
+                    editField = el
                 else
                     editField = $.el.input type: 'text', value: @renderableValue(true)
 
