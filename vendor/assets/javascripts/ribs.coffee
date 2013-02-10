@@ -64,23 +64,32 @@ do ($=jQuery) ->
             @build()
 
         remove: ->
+            @removeAllSubviews()
             super()
-            @removeSubviews()
 
-        removeSubviews:  ->
-            _.each @_listSubviews, (subview) ->
-                subview.remove()
-        
+        removeAllSubviews: ->
+            @removeSubviews "list"
+            @removeSubviews "action"
+
+        removeSubviews: (type) ->
+            if l = @subviews(type)
+                for subview in l
+                    subview.remove()
+            @["_#{type}Subviews"] = []
+
+        subviews: (type) ->
+            @["_#{type}Subviews"]
+
+
         build: ->
 
-            @removeSubviews()
             @$el.empty()
 
             for t in @renderOrder
                 l = t.replace /^./, "$#{t[0].toLowerCase()}"
                 @[l] = @["initialize#{t}"]() unless @["suppress#{t}"] or @[l]?
                 @$el.append @[l]
-
+            
             @setCollection @collection if @collection?
 
         render: ->
@@ -329,22 +338,22 @@ do ($=jQuery) ->
                 @$list.children(":nth-child(#{ idx + 1 })").before view.el
 
             view.render() if @$el.is ":visible"
-            @_listSubviews.push view
+            @subviews("list").push view
             view.select() if @selectedByDefault
 
         addAllItems : ->
-            @_listSubviews = []
+            @removeSubviews "list"
             @$list.empty()
             @collection?.each @addItem, this
 
         # Gets list item view by model ID
         get: (id) ->
-            _.find @_listSubviews, (view) ->
+            _.find @subviews("list"), (view) ->
                 view.model.id == id
 
         # Gets list item view by CID
         getByCid: (cid) ->
-            _.find @_listSubviews, (view) ->
+            _.find @subviews("list"), (view) ->
                 view.model.cid == cid
         
         # initializing
@@ -363,7 +372,7 @@ do ($=jQuery) ->
             @batchActions = []
             @inlineActions = []
             @allActions = []
-            @_actionSubviews = []
+            @removeSubviews "action"
 
             $batchActions = $ "<ul/>", class: "actions"
             
@@ -376,23 +385,22 @@ do ($=jQuery) ->
                     @batchActions.push action
                     view = new @actionView
                         model: action
-                    @_actionSubviews.push view
+                    @subviews("action").push view
                     $batchActions.append view.el
                     view.render()
 
             $batchActions
 
         renderActions: ->
-            for view in @_actionSubviews
+            for view in @subviews("action")
                 view.render() 
         
         initializeList: ->
-            @_listSubviews = []
             $list = $ "<ul/>", class: "list"
             $list
 
         renderList: ->
-            for view in @_listSubviews
+            for view in @subviews("list")
                 view.undelegateEvents()
                 view.render() 
                 view.delegateEvents()
@@ -562,6 +570,10 @@ do ($=jQuery) ->
 
         remove: ->
             @deselect()
+            for inlineAction in @inlineActions
+                inlineAction.remove()
+            for listItemCell in @listItemCells
+                listItemCell.remove()
             super()
 
 
