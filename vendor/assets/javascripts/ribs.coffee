@@ -4,6 +4,11 @@ do ($=jQuery) ->
     root = window ? module.exports
     root.Ribs = {}
 
+    _keyboardManager = null
+
+    Ribs.getKeyboardManager = ->
+        _keyboardManager ?= new Ribs.KeyboardManager()
+
     # `Ribs.List` is the primary Ribs component.
     class Ribs.List extends Backbone.View
   
@@ -41,6 +46,7 @@ do ($=jQuery) ->
             @itemView ?= Ribs.ListItem
             @actionView ?= Ribs.BatchAction
     
+            @options ?= options
             @events = _.extend {}, @events, @_ribsEvents
 
             @sortingDirection = {}
@@ -50,12 +56,11 @@ do ($=jQuery) ->
 
 
             # Lazily construct global keyboard manager
-            Ribs.keyboardManager ?= new Ribs.KeyboardManager()
-            @keyboardManager = Ribs.keyboardManager
+            @keyboardManager = Ribs.getKeyboardManager()
+
+            @initializeHotKeys()
 
             super
-      
-            @initializeHotKeys()
 
             @$el.addClass('ribs')
 
@@ -235,10 +240,10 @@ do ($=jQuery) ->
             @keyboardNamespace = @keyboardManager.registerView this, @plural()
 
             # Bind jump key.
-            if @jumpkey?
+            if @options.jumpkey?
                 @keyboardManager.registerJumpKey 
                     label: @plural()
-                    jumpkey: @jumpkey
+                    jumpkey: @options.jumpkey
                     context: this
                     callback: =>
                         @$(@jumpSelector).focus()
@@ -402,7 +407,6 @@ do ($=jQuery) ->
 
         renderList: ->
             for view in @subviews("list")
-                view.undelegateEvents()
                 view.render() 
                 view.delegateEvents()
 
@@ -519,7 +523,6 @@ do ($=jQuery) ->
 
             # Render our individual cells
             for cell in @listItemCells
-                cell.undelegateEvents()
                 @$el.append cell.el
                 cell.render()
                 cell.delegateEvents()
@@ -527,7 +530,6 @@ do ($=jQuery) ->
             # Add inline actions.
             ul = $ "<ul/>", class: "actions"
             for inlineAction in @inlineActions
-                inlineAction.undelegateEvents()
                 $(ul).append inlineAction.el
                 inlineAction.render()
                 inlineAction.delegateEvents()
@@ -603,7 +605,7 @@ do ($=jQuery) ->
 
             if !nomap and _.isFunction @options.map
                 value = @options.map.call @options.view.view, value, @model
-            value
+            value ? ""
 
         render: ()->
             @$el.empty()
@@ -977,4 +979,5 @@ do ($=jQuery) ->
                         li.append $ "<span/>", class: "action", text: binding.label
                         ul.append li
                     @$el.append h1, ul
+
 
