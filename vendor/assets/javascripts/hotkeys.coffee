@@ -103,8 +103,9 @@ do ($=jQuery) ->
 
             return unless @options.enableKeyboardShortcuts
 
-            # don't do anything if user is typing text
-            return if $(document.activeElement).is(":input")
+            # don't do anything if the user is interacting with a text input field
+            # (return if $el is not radio, is not checkbox, is not a button, but it is still an input element)
+            return if $(document.activeElement).not(":radio").not(":checkbox").not(":button").is(":input")
 
             context = @currentContext ? @registeredViews[namespace].tree
 
@@ -176,10 +177,11 @@ do ($=jQuery) ->
             @$el.empty()
 
             for namespace, view of @options.views
-                unless $(view.context?.el).is ":hidden"
+                bindings = view.bindings
+                unless $(view.context?.el).is ":hidden" or Object.keys(bindings).length == 0
                     h1 = $ "<h1/>", text: view.label
                     ul = $ "<ul/>"
-                    for binding in view.bindings
+                    for binding in bindings
                         li = $ "<li/>", class: "hotkey"
                         li.append $ "<span/>", class: "key", text: binding.hotkey
                         li.append $ "<span/>", class: "action", text: binding.label
