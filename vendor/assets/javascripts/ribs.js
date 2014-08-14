@@ -519,6 +519,9 @@
           ul = $("<ul/>");
           for (_i = 0, _len = bindings.length; _i < _len; _i++) {
             binding = bindings[_i];
+            if (!(binding.label != null)) {
+              continue;
+            }
             li = $("<li/>", {
               "class": "hotkey"
             });
